@@ -14,11 +14,16 @@ app = FastAPI(title="SaaS - Sistema HRIS Multi-Tenant")
 # CONFIGURACIÓN DE SEGURIDAD Y CONEXIÓN
 # ==========================================
 
-# Configuración CORS
-# IMPORTANTE: En producción, cambia ["*"] por la URL de tu Vercel, ej: ["https://tu-app.vercel.app"]
+# Configuración CORS CORREGIDA
+# Especificamos explícitamente tu Vercel y tu entorno local
+origenes_permitidos = [
+    "https://rrhh-seven.vercel.app",  # Tu frontend en Vercel
+    "http://localhost:5173",          # Tu frontend local (Vite)
+]
+
 app.add_middleware(
     CORSMiddleware, 
-    allow_origins=["*"], 
+    allow_origins=origenes_permitidos, 
     allow_credentials=True, 
     allow_methods=["*"], 
     allow_headers=["*"],
@@ -184,7 +189,7 @@ def obtener_empleados(x_user_id: int = Header(None)):
 def agregar_empleado(emp: EmpleadoNuevo, x_user_id: int = Header(None)):
     if not x_user_id: raise HTTPException(status_code=401)
     try:
-        datos = emp.dict()
+        datos = emp.model_dump() # Actualizado de .dict() a model_dump() (estándar de Pydantic v2)
         datos['usuario_id'] = x_user_id 
         nuevo_emp = pd.DataFrame([datos])
         nuevo_emp.to_sql('Empleados', con=engine, if_exists='append', index=False)
