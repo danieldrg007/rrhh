@@ -216,3 +216,4 @@ def eliminar_empleado(id_empleado: int, x_user_id: int = Header(None)):
             conn.execute(query, {"id": id_empleado, "uid": x_user_id})
         return {"mensaje": "Dado de baja."}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+    #nuevo
