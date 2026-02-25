@@ -217,12 +217,21 @@ def eliminar_empleado(id_empleado: int, x_user_id: int = Header(None)):
         return {"mensaje": "Dado de baja."}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
     #nuevo
-    # ==========================================
+  # ==========================================
 # INICIO AUTOMÁTICO PARA PRODUCCIÓN (RAILWAY)
 # ==========================================
 if __name__ == "__main__":
     import uvicorn
-    # Leemos el puerto dinámico que Railway nos exige, o usamos 8000 en local
-    puerto = int(os.environ.get("PORT", 8000))
-    # Arrancamos el servidor directamente desde Python
-    uvicorn.run("main:app", host="0.0.0.0", port=puerto)
+    import os
+    
+    # Leemos el puerto dinámico de Railway
+    puerto = int(os.environ.get("PORT", 8080))
+    
+    # Arrancamos Uvicorn habilitando explícitamente la confianza en el proxy de Railway
+    uvicorn.run(
+        "main:app", 
+        host="0.0.0.0", 
+        port=puerto, 
+        proxy_headers=True, 
+        forwarded_allow_ips="*"
+    )
